@@ -1,4 +1,4 @@
-package com.example.jobmanager.controllers;
+package com.example.jobmanager;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,4 +53,5 @@ public class InterviewsController {
             return "Interview with id: " + id + " not found";
         }
     }
+
 }
