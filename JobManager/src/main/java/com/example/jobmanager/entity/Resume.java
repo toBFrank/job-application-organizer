@@ -19,8 +19,13 @@ public class Resume {
     @OneToMany(mappedBy = "resume")
     private List<Application> applications;
 
-    @Column
+    @Column(nullable = false)
     private boolean isMaster;
+
+    // if tailored resume, reference to master resume
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "master_resume_id")
+    private Resume masterResume;
 
     @Column
     private String fileName;
