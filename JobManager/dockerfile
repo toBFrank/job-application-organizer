@@ -8,14 +8,19 @@ COPY gradle ./gradle
 # Copy source code
 COPY src ./src
 
-# Install inotify-tools for file watching
-RUN apt-get update && apt-get install -y inotify-tools
+# Install inotify-tools for file watching + dos2unix to normalize line endings
+RUN apt-get update && apt-get install -y inotify-tools dos2unix \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy entrypoint script and fix permissions + line endings
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN dos2unix /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh
 
 # Expose port
 EXPOSE 8080
 
 # Entrypoint script for hot reload
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
+# COPY docker-entrypoint.sh /docker-entrypoint.sh
+# RUN chmod +x /docker-entrypoint.sh
+#
 ENTRYPOINT ["/docker-entrypoint.sh"]
