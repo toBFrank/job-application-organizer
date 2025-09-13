@@ -16,8 +16,19 @@ public class Resume {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private boolean isMaster;
+
+    // if tailored resume, reference to master resume
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "master_resume_id")
+    private Resume masterResume;
+
+    @Column
+    private String title;
+
+    @Column
+    private String status;
 
     @Column
     private String fileName;
