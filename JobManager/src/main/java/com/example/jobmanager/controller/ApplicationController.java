@@ -1,4 +1,4 @@
-package com.example.jobmanager.controllers;
+package com.example.jobmanager.controller;
 
 import com.example.jobmanager.entity.Application;
 import com.example.jobmanager.repository.ApplicationRepository;
@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/applications") // Base URL for all endpoints
-public class ApplicationService {
+public class ApplicationController {
 
     @Autowired
     private ApplicationRepository repository;
