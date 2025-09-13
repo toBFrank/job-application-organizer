@@ -16,6 +16,9 @@ public class Resume {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToMany(mappedBy = "resume")
+    private List<Application> applications;
+
     @Column
     private boolean isMaster;
 
