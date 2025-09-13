@@ -19,10 +19,16 @@ services:
       retries: 5
 
   backend:
-    build: ./JobManager
+    build: 
+      context: ./JobManager
+      dockerfile: Dockerfile
     container_name: jobmanager-app
     ports:
       - "8080:8080"
+    volumes:
+      - ./JobManager/src:/app/src
+      - ./JobManager/build.gradle:/app/build.gradle
+      - ./JobManager/settings.gradle:/app/settings.gradle
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/jobmanager
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -32,12 +38,20 @@ services:
         condition: service_healthy
 
   frontend:
-    build: ./site
+    build: 
+      context: ./site
+      dockerfile: Dockerfile
     container_name: jobmanager-site
+    volumes:
+      - ./site/src:/app/src
+      - ./site/public:/app/public
+      - ./site/package.json:/app/package.json
+      - ./site/package-lock.json:/app/package-lock.json
     ports:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://backend:8080
+    command: npm run dev
     depends_on:
       - backend
 
