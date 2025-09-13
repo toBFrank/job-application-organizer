@@ -6,4 +6,7 @@ docker-compose up --build
 
 dont change the ports, not neccessary
 Frontend (Next): http://localhost:3000
-Backend (SpringBooot): http://localhost:8080
+Backend (SpringBoot): http://localhost:8080
+
+Backend will be updated so we can adjust our endpoints, but if you'd like to test for now just go to
+http://localhost:8080/hello or in CLI: curl http://localhost:8080/hello
