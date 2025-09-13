@@ -2,17 +2,21 @@ version: "3.9"
 
 services:
   backend:
-    build: ./JobManager
+    build: 
+      context: ./JobManager
+      dockerfile: Dockerfile
     container_name: jobmanager-app
+    ports:
+      - "8080:8080"
     volumes:
       - ./JobManager/src:/app/src
       - ./JobManager/build.gradle:/app/build.gradle
       - ./JobManager/settings.gradle:/app/settings.gradle
-    ports:
-      - "8080:8080"
 
   frontend:
-    build: ./site
+    build: 
+      context: ./site
+      dockerfile: Dockerfile
     container_name: jobmanager-site
     volumes:
       - ./site/src:/app/src
