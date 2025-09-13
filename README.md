@@ -61,3 +61,33 @@ This API provides CRUD operations and search/filtering for managing entities in 
 | `interviews` | List<Interviews> | List of associated interviews |
 
 ---
+## Interviews
+
+**Base URL:** `/interviews`
+
+#### API Endpoints
+
+| HTTP Method | URL                | Request Body            | URL Params  | Response                         | Description                  |
+| ----------- | ------------------ | ----------------------- | ----------- | -------------------------------- | ---------------------------- |
+| POST        | `/interviews`      | `Interview` JSON object | None        | `Interview` JSON with ID         | Create a new interview       |
+| GET         | `/interviews`      | None                    | None        | List of `Interview` JSON         | Get all interviews           |
+| GET         | `/interviews/{id}` | None                    | `id` (Long) | `Interview` JSON or null         | Get an interview by ID       |
+| PUT         | `/interviews/{id}` | `Interview` JSON object | `id` (Long) | Updated `Interview` JSON or null | Update an existing interview |
+| DELETE      | `/interviews/{id}` | None                    | `id` (Long) | String message                   | Delete an interview by ID    |
+
+#### Entity Fields
+
+| Field Name        | Type        | Description                                                    |
+| ----------------- | ----------- | -------------------------------------------------------------- |
+| `id`              | Long        | Auto-generated primary key                                     |
+| `application`     | Application | Associated application entity                                  |
+| `interviewDate`   | DateTime    | Date and time of the interview                                 |
+| `interviewStatus` | String      | Status of the interview (e.g., scheduled, completed, canceled) |
+| `notes`           | String      | Additional notes about the interview                           |
+| `location`        | String      | Location of the interview                                      |
+| `interviewerName` | String      | Name of the interviewer                                        |
+| `durationMinutes` | Integer     | Duration of the interview in minutes                           |
+
+---
+
+
