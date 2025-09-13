@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,13 +17,13 @@ public class ApplicationController {
     private final ApplicationService applicationService;
 
     @Autowired
-    public ApplicationController(ApplicationService applicationService) {
+    public ApplicationController(final ApplicationService applicationService) {
         this.applicationService = applicationService;
     }
 
     // ================= CREATE =================
     @PostMapping
-    public ResponseEntity<Application> createApplication(@Valid @RequestBody Application application) {
+    public ResponseEntity<Application> createApplication(final @RequestBody Application application) {
         try {
             Application createdApp = applicationService.createApplication(application);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdApp);
@@ -42,7 +41,7 @@ public class ApplicationController {
 
     // ================= READ BY ID =================
     @GetMapping("/{id}")
-    public ResponseEntity<Application> getApplicationById(@PathVariable Long id) {
+    public ResponseEntity<Application> getApplicationById(final @PathVariable Long id) {
         try {
             return applicationService.getApplicationById(id)
                     .map(application -> ResponseEntity.ok(application))
@@ -54,8 +53,8 @@ public class ApplicationController {
 
     // ================= UPDATE =================
     @PutMapping("/{id}")
-    public ResponseEntity<Application> updateApplication(@PathVariable Long id,
-                                                         @Valid @RequestBody Application updatedApp) {
+    public ResponseEntity<Application> updateApplication(final @PathVariable Long id,
+                                                         final @RequestBody Application updatedApp) {
         try {
             Application updated = applicationService.updateApplication(id, updatedApp);
             return ResponseEntity.ok(updated);
@@ -70,7 +69,7 @@ public class ApplicationController {
 
     // ================= DELETE =================
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteApplication(@PathVariable Long id) {
+    public ResponseEntity<String> deleteApplication(final @PathVariable Long id) {
         try {
             applicationService.deleteApplication(id);
             return ResponseEntity.ok("Successfully deleted application with ID: " + id);
@@ -85,7 +84,7 @@ public class ApplicationController {
 
     // Mark application as rejected
     @PutMapping("/{id}/reject")
-    public ResponseEntity<Application> markAsRejected(@PathVariable Long id) {
+    public ResponseEntity<Application> markAsRejected(final @PathVariable Long id) {
         try {
             Application rejectedApp = applicationService.markAsRejected(id);
             return ResponseEntity.ok(rejectedApp);
@@ -96,7 +95,7 @@ public class ApplicationController {
 
     // Mark application as job offer
     @PutMapping("/{id}/job-offer")
-    public ResponseEntity<Application> markAsJobOffer(@PathVariable Long id) {
+    public ResponseEntity<Application> markAsJobOffer(final @PathVariable Long id) {
         try {
             Application jobOfferApp = applicationService.markAsJobOffer(id);
             return ResponseEntity.ok(jobOfferApp);
@@ -109,7 +108,7 @@ public class ApplicationController {
 
     // Search by company
     @GetMapping("/search/company")
-    public ResponseEntity<List<Application>> searchByCompany(@RequestParam String company) {
+    public ResponseEntity<List<Application>> searchByCompany(final @RequestParam String company) {
         try {
             List<Application> applications = applicationService.findByCompany(company);
             return ResponseEntity.ok(applications);
@@ -120,7 +119,7 @@ public class ApplicationController {
 
     // Search by title
     @GetMapping("/search/title")
-    public ResponseEntity<List<Application>> searchByTitle(@RequestParam String title) {
+    public ResponseEntity<List<Application>> searchByTitle(final @RequestParam String title) {
         try {
             List<Application> applications = applicationService.findByTitle(title);
             return ResponseEntity.ok(applications);
@@ -157,7 +156,7 @@ public class ApplicationController {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleBadRequest(IllegalArgumentException e) {
+    public ResponseEntity<String> handleBadRequest(final IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
