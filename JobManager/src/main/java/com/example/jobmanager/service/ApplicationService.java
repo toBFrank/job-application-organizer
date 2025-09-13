@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,12 +43,12 @@ public class ApplicationService {
     }
 
     // READ - Get application by ID
-    public Optional<Application> getApplicationById(final @NotNull Long id) {
+    public Optional<Application> getApplicationById(final Long id) {
         return applicationRepository.findById(id);
     }
 
     // UPDATE - Update existing application
-    public Application updateApplication(final @NotNull Long id, final @Valid Application updatedApplication) throws Exception {
+    public Application updateApplication(final Long id, final Application updatedApplication) throws Exception {
         return applicationRepository.findById(id)
                 .map(existingApp -> {
                     validateApplicationData(updatedApplication);
@@ -68,7 +65,7 @@ public class ApplicationService {
     }
 
     // DELETE - Delete application
-    public void deleteApplication(final @NotNull Long id) throws Exception {
+    public void deleteApplication(final Long id) throws Exception {
         if (!applicationRepository.existsById(id)) {
             throw new ApplicationNotFoundException("Application not found with id: " + id);
         }
@@ -76,11 +73,11 @@ public class ApplicationService {
     }
 
     // SEARCH METHODS
-    public List<Application> findByCompany(final @NotBlank String company) {
+    public List<Application> findByCompany(final String company) {
         return applicationRepository.findByCompanyContainingIgnoreCase(company);
     }
 
-    public List<Application> findByTitle(final @NotBlank String title) {
+    public List<Application> findByTitle(final String title) {
         return applicationRepository.findByTitleContainingIgnoreCase(title);
     }
 
@@ -96,7 +93,7 @@ public class ApplicationService {
         return applicationRepository.findApplicationsWithInterviews();
     }
 
-    public Application markAsRejected(final @NotNull Long id) {
+    public Application markAsRejected(final Long id) {
         return applicationRepository.findById(id)
                 .map(app -> {
                     app.setRejected(true);
@@ -106,7 +103,7 @@ public class ApplicationService {
                 .orElseThrow(() -> new ApplicationNotFoundException("Application not found with id: " + id));
     }
 
-    public Application markAsJobOffer(final @NotNull Long id) {
+    public Application markAsJobOffer(final Long id) {
         return applicationRepository.findById(id)
                 .map(app -> {
                     app.setJobOffer(true);
