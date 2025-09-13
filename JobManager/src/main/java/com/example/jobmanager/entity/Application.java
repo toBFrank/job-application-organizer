@@ -23,6 +23,11 @@ public class Application {
     @Column(name = "job_offer")
     private Boolean jobOffer;
 
+    // Many applications can use one resume
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_id")
+    private Resume resume;
+
     // One application can have many interviews
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Interviews> interviews = new ArrayList<>();
@@ -67,6 +72,10 @@ public class Application {
         return jobOffer;
     }
 
+    public Resume getResume() {
+        return resume;
+    }
+
     public List<Interviews> getInterviews() {
         return interviews;
     }
@@ -90,6 +99,10 @@ public class Application {
 
     public void setJobOffer(Boolean jobOffer) {
         this.jobOffer = jobOffer;
+    }
+
+    public void setResume(Resume resume) {
+        this.resume = resume;
     }
 
     public void setInterviews(List<Interviews> interviews) {
