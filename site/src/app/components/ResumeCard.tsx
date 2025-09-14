@@ -61,7 +61,7 @@ export default function ResumeCard({ resume }: ResumeCardProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-500 hover:underline"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}v
                 >
                   {resume.portfolioURL}
                 </a>
