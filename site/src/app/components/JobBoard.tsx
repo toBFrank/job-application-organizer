@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import confetti from 'canvas-confetti';
 
 type Application = {
   id: number;
@@ -31,6 +32,7 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
+  const [showCelebration, setShowCelebration] = useState(false);
 
   // Store the dragged app + source column
   const [dragged, setDragged] = useState<{ appId: string; from: ColumnId } | null>(null);
@@ -159,6 +161,31 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
     }
   };
 
+  // Trigger confetti animation for offer column
+  const triggerConfetti = () => {
+    // Show celebration message
+    setShowCelebration(true);
+    setTimeout(() => setShowCelebration(false), 3000);
+
+    // Create a burst of confetti from the center
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#10b981', '#059669', '#047857', '#065f46', '#064e3b'], // Teal colors to match the theme
+    });
+
+    // Add a second burst after a short delay
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        spread: 50,
+        origin: { y: 0.4 },
+        colors: ['#f59e0b', '#d97706', '#b45309', '#92400e', '#78350f'], // Amber colors
+      });
+    }, 200);
+  };
+
   function onDragStart(
     e: React.DragEvent<HTMLDivElement>,
     appId: number,
@@ -195,6 +222,11 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
 
       // Update backend asynchronously
       updateApplicationStatus(appIdNum, newStatus, app);
+
+      // Trigger confetti if moving to offer column
+      if (to === 'offer') {
+        triggerConfetti();
+      }
 
       return {
         ...prev,
@@ -237,8 +269,16 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
   }
 
   return (
-    <div className="grid grid-cols-4">
-      {(Object.keys(columns) as ColumnId[]).map((colId) => {
+    <div className="relative">
+      {/* Celebration Message */}
+      {showCelebration && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-gradient-to-r from-green-500 to-teal-500 text-white px-8 py-4 rounded-lg shadow-2xl text-2xl font-bold animate-bounce">
+          🎉 Congratulations! You got an offer! 🎉
+        </div>
+      )}
+      
+      <div className="grid grid-cols-4">
+        {(Object.keys(columns) as ColumnId[]).map((colId) => {
         const col = columns[colId];
         return (
           <section
@@ -302,6 +342,7 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
           </section>
         );
       })}
+      </div>
     </div>
   );
 }
