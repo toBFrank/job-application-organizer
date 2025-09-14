@@ -42,19 +42,15 @@ public class Resume {
     @Column
     private String portfolioURL;
 
-    @Lob
     @Column(name = "technical_skills")
     private String technicalSkills;
 
-    @Lob
     @Column(name = "work_experience")
     private String workExperience;
 
-    @Lob
     @Column(name = "education")
     private String education;
 
-    @Lob
     @Column(name = "projects")
     private String projects;
 }

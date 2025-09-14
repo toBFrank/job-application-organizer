@@ -3,6 +3,8 @@ package com.example.jobmanager.controller;
 import com.example.jobmanager.entity.Interviews;
 import com.example.jobmanager.repository.InterviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,9 +35,20 @@ public class InterviewsController {
 
     // Get Interview by ID
     @GetMapping("/{id}")
-    public Interviews getInterviewById(@PathVariable Long id) {
-        return repository.findById(id).orElse(null);
+    public ResponseEntity<Interviews> getInterviewById(@PathVariable Long id) {
+        try {
+            // Attempt to find the interview by ID from the repository
+            return repository.findById(id)
+                    // If found, return the interview wrapped in a 200 OK response
+                    .map(ResponseEntity::ok)
+                    // If not found, return a 404 Not Found response
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            // If an error occurs (e.g., invalid input), return a 400 Bad Request response
+            return ResponseEntity.badRequest().build();
+        }
     }
+
 
     // Update Interview
     @PutMapping("/{id}")
@@ -56,12 +69,13 @@ public class InterviewsController {
 
     // Delete an interview by ID
     @DeleteMapping("/{id}")
-    public String deleteInterview(@PathVariable Long id) {
+    public ResponseEntity<String> deleteInterview(@PathVariable Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
-            return "Deleted Interview with id: " + id;
+            return ResponseEntity.ok("Deleted Interview with id: " + id);
         } else {
-            return "Interview with id: " + id + " not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Interview with id: " + id + " not found");
         }
     }
 }
