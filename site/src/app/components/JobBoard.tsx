@@ -30,6 +30,7 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
   const [columns, setColumns] = useState<Columns>(DEFAULT_COLUMNS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
 
   // Store the dragged app + source column
   const [dragged, setDragged] = useState<{ appId: string; from: ColumnId } | null>(null);
@@ -114,6 +115,47 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
     } catch (err) {
       console.error('Error updating application status:', err);
       setError('Failed to update application status');
+    }
+  };
+
+  // Delete application from backend
+  const deleteApplication = async (appId: number) => {
+    try {
+      setDeletingIds(prev => new Set(prev).add(appId));
+      
+      const response = await fetch(`http://localhost:8080/applications/${appId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Remove from local state
+      setColumns((prev) => {
+        const newColumns = { ...prev };
+        Object.keys(newColumns).forEach(key => {
+          newColumns[key as ColumnId].apps = newColumns[key as ColumnId].apps.filter(app => app.id !== appId);
+        });
+        return newColumns;
+      });
+
+    } catch (err) {
+      console.error('Error deleting application:', err);
+      setError('Failed to delete application');
+    } finally {
+      setDeletingIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(appId);
+        return newSet;
+      });
+    }
+  };
+
+  // Handle delete confirmation
+  const handleDeleteApplication = (appId: number, appTitle: string) => {
+    if (window.confirm(`Are you sure you want to delete the application for "${appTitle}"?`)) {
+      deleteApplication(appId);
     }
   };
 
@@ -236,10 +278,15 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
                     </div>
                     <div className="flex items-center gap-1">
                       <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent drag when clicking delete
+                          handleDeleteApplication(app.id, app.title);
+                        }}
+                        disabled={deletingIds.has(app.id)}
                         aria-label={`delete-${app.id}`}
-                        className="text-xs px-2 py-1 border rounded hover:bg-white"
+                        className="text-xs px-2 py-1 border rounded hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Delete
+                        {deletingIds.has(app.id) ? 'Deleting...' : 'Delete'}
                       </button>
                     </div>
                   </div>
