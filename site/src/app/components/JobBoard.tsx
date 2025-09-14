@@ -33,6 +33,7 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
   const [error, setError] = useState<string | null>(null);
   const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showRejection, setShowRejection] = useState(false);
 
   // Store the dragged app + source column
   const [dragged, setDragged] = useState<{ appId: string; from: ColumnId } | null>(null);
@@ -186,6 +187,13 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
     }, 200);
   };
 
+  // Trigger rejection message for rejected column
+  const triggerRejection = () => {
+    // Show rejection message
+    setShowRejection(true);
+    setTimeout(() => setShowRejection(false), 3000);
+  };
+
   function onDragStart(
     e: React.DragEvent<HTMLDivElement>,
     appId: number,
@@ -226,6 +234,11 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
       // Trigger confetti if moving to offer column
       if (to === 'offer') {
         triggerConfetti();
+      }
+
+      // Trigger rejection message if moving to rejected column
+      if (to === 'rejected') {
+        triggerRejection();
       }
 
       return {
@@ -274,6 +287,13 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
       {showCelebration && (
         <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-gradient-to-r from-green-500 to-teal-500 text-white px-8 py-4 rounded-lg shadow-2xl text-2xl font-bold animate-bounce">
           🎉 Congratulations! You got an offer! 🎉
+        </div>
+      )}
+
+      {/* Rejection Message */}
+      {showRejection && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-gradient-to-r from-red-500 to-pink-500 text-white px-8 py-4 rounded-lg shadow-2xl text-2xl font-bold animate-pulse">
+          😔 Womp womp... Better luck next time! 😔
         </div>
       )}
       
