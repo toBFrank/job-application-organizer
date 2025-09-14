@@ -169,9 +169,3 @@ public class Interviews {
     }
 }
 
-// Enum for interview types
-enum InterviewType {
-    OA,         // Online Assessment
-    BEHAVIORAL, // Behavioral Interview
-    TECHNICAL   // Technical Interview
-}

@@ -1,8 +1,27 @@
 version: "3.9"
 
 services:
+  database:
+    image: postgres:15-alpine
+    container_name: jobmanager-db
+    environment:
+      POSTGRES_DB: jobmanager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
-    build: ./JobManager
+    build: 
+      context: ./JobManager
+      dockerfile: Dockerfile
     container_name: jobmanager-app
     volumes:
       - ./JobManager/src:/app/src
@@ -10,9 +29,22 @@ services:
       - ./JobManager/settings.gradle:/app/settings.gradle
     ports:
       - "8080:8080"
+    volumes:
+      - ./JobManager/src:/app/src
+      - ./JobManager/build.gradle:/app/build.gradle
+      - ./JobManager/settings.gradle:/app/settings.gradle
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/jobmanager
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      database:
+        condition: service_healthy
 
   frontend:
-    build: ./site
+    build: 
+      context: ./site
+      dockerfile: Dockerfile
     container_name: jobmanager-site
     volumes:
       - ./site/src:/app/src
@@ -26,3 +58,6 @@ services:
     command: npm run dev
     depends_on:
       - backend
+
+volumes:
+  postgres_data:
