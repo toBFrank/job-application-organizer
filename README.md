@@ -90,4 +90,28 @@ This API provides CRUD operations and search/filtering for managing entities in 
 
 ---
 
+#### API Endpoints
+
+| HTTP Method | URL                   | Request Body                    | URL Params  | Response                   | Description                              |
+| ----------- | --------------------- | ------------------------------- | ----------- | -------------------------- | ---------------------------------------- |
+| `GET`       | `/resume`             | None                            | None        | List of `Resume` JSON      | Get all resumes                          |
+| `GET`       | `/resume/{id}`        | None                            | `id` (Long) | `Resume` JSON or `null`    | Get a resume by ID                       |
+| `POST`      | `/resume`             | `Resume` JSON object            | None        | Created `Resume` JSON      | Create a new master resume               |
+| `POST`      | `/resume/tailor/{id}` | `Resume` JSON object (optional) | `id` (Long) | New tailored `Resume` JSON | Create a tailored resume based on master |
+| `PUT`       | `/resume/{id}`        | `Resume` JSON object            | `id` (Long) | Updated `Resume` JSON      | Update an existing master resume         |
+| `DELETE`    | `/resume/{id}`        | None                            | `id` (Long) | String message             | Delete a resume by ID                    |
+
+#### Entity Fields
+| Field Name        | Type   | Description                                      |
+| ----------------- | ------ | ------------------------------------------------ |
+| `id`              | Long   | Auto-generated primary key                       |
+| `fileName`        | String | File name for the resume                         |
+| `name`            | String | Name of the person                               |
+| `email`           | String | Email address                                    |
+| `portfolioURL`    | String | Link to portfolio or personal site               |
+| `technicalSkills` | String | Comma-separated technical skills                 |
+| `workExperience`  | String | Work experience (usually formatted text or HTML) |
+| `education`       | String | Education background                             |
+| `projects`        | String | Summary of projects                              |
+
 
