@@ -195,7 +195,7 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
   }
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-4">
       {(Object.keys(columns) as ColumnId[]).map((colId) => {
         const col = columns[colId];
         return (
@@ -203,7 +203,7 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
             key={col.id}
             onDragOver={onDragOver}
             onDrop={(e) => onDrop(e, col.id as ColumnId)}
-            className="bg-white border rounded-md shadow-sm flex flex-col min-h-[300px]"
+            className="bg-white border-r border-t border-gray-100 shadow-sm flex flex-col"
           >
             {/* Column Headers */}
             <div className="bg-gray-50">
