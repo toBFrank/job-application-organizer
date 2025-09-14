@@ -57,13 +57,26 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
         
         const applications: Application[] = await response.json();
         
+        // Debug: Log applications to check for duplicates
+        console.log('Fetched applications:', applications);
+        console.log('Application IDs:', applications.map(app => app.id));
+        
         // Group applications by status
         const newColumns = { ...DEFAULT_COLUMNS };
+        
+        // Clear all columns first
+        Object.keys(newColumns).forEach(key => {
+          newColumns[key as ColumnId].apps = [];
+        });
         
         applications.forEach(app => {
           const columnId = statusToColumnMap[app.status];
           if (columnId) {
-            newColumns[columnId].apps.push(app);
+            // Check if application already exists in this column to prevent duplicates
+            const exists = newColumns[columnId].apps.some(existingApp => existingApp.id === app.id);
+            if (!exists) {
+              newColumns[columnId].apps.push(app);
+            }
           }
         });
         
@@ -207,9 +220,9 @@ export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
                 <div className="text-sm text-slate-400">No applications</div>
               )}
 
-              {col.apps.map((app) => (
+              {col.apps.map((app, index) => (
                 <article
-                  key={app.id}
+                  key={`${col.id}-${app.id}-${index}`}
                   draggable
                   onDragStart={(e) => onDragStart(e as React.DragEvent<HTMLDivElement>, app.id, col.id as ColumnId)}
                   className="bg-slate-50 p-3 rounded-md border cursor-grab hover:shadow-sm"
