@@ -55,5 +55,17 @@ services:
     depends_on:
       - backend
 
+  # NEW SERVICE — pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: jobmanager-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com   # choose your email
+      PGADMIN_DEFAULT_PASSWORD: admin           # choose your password
+    ports:
+      - "5050:80"  # pgAdmin accessible at http://localhost:5050
+    depends_on:
+      - database
+
 volumes:
   postgres_data:
