@@ -3,6 +3,8 @@ package com.example.jobmanager.controller;
 import com.example.jobmanager.entity.Resume;
 import com.example.jobmanager.repository.ResumeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +28,12 @@ public class ResumeController {
 
     // Get a resume by id
     @GetMapping("/{id}")
-    public Resume getResumeById(@PathVariable Long id) {
-        return repository.findById(id).orElse(null);
+    public ResponseEntity<?> getResumeById(@PathVariable Long id) {
+        return repository.findById(id)
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body("Resume with id: " + id + " not found"));
     }
 
     // Create new Master Resume
@@ -69,12 +75,12 @@ public class ResumeController {
 
     // Remove Master Resume by resume ID
     @DeleteMapping("/{id}")
-    public String deleteInterview(@PathVariable Long id) {
+    public String deleteResume(@PathVariable Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
-            return "Deleted Interview with id: " + id;
+            return "Deleted Resume with id: " + id;
         } else {
-            return "Interview with id: " + id + " not found";
+            return "Resume with id: " + id + " not found";
         }
     }
 
