@@ -29,10 +29,6 @@ services:
       - ./JobManager/settings.gradle:/app/settings.gradle
     ports:
       - "8080:8080"
-    volumes:
-      - ./JobManager/src:/app/src
-      - ./JobManager/build.gradle:/app/build.gradle
-      - ./JobManager/settings.gradle:/app/settings.gradle
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/jobmanager
       - SPRING_DATASOURCE_USERNAME=postgres
