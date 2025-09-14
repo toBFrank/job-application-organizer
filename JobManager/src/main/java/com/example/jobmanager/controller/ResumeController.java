@@ -5,6 +5,8 @@ import com.example.jobmanager.repository.ResumeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/resume")
 public class ResumeController {
@@ -14,6 +16,18 @@ public class ResumeController {
     @Autowired
     public ResumeController(ResumeRepository repository) {
         this.repository = repository;
+    }
+
+    // Get all resumes
+    @GetMapping
+    public List<Resume> getAllResumes() {
+        return repository.findAll();
+    }
+
+    // Get a resume by id
+    @GetMapping("/{id}")
+    public Resume getResumeById(@PathVariable Long id) {
+        return repository.findById(id).orElse(null);
     }
 
     // Create new Master Resume
