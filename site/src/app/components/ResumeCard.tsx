@@ -6,6 +6,7 @@ interface Resume {
   createdAt: string;
   lastEdited: string;
   isMaster: boolean;
+  portfolioURL: string;
 }
 
 interface ResumeCardProps {
@@ -23,53 +24,58 @@ function formatDate(dateString: string) {
 
 export default function ResumeCard({ resume }: ResumeCardProps) {
   return (
-    <Link 
-      href={`/resumes/${resume.id}`}
-      className="block border border-gray-200 rounded-lg p-4 hover:shadow-lg hover:border-blue-300 transition-all duration-200 bg-white"
-    >
-      <div className="flex items-start justify-between mb-2">
-        <h3 className="font-semibold text-gray-800 text-lg">{resume.title}</h3>
-        {resume.isMaster && (
-          <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">
+      <Link
+          href={`/resumes/${resume.id}`}
+          className="block border border-gray-200 rounded-lg p-4 hover:shadow-lg hover:border-blue-300 transition-all duration-200 bg-white"
+      >
+        <div className="flex items-start justify-between mb-2">
+          <h3 className="font-semibold text-gray-800 text-lg">{resume.title}</h3>
+          {resume.isMaster && (
+              <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">
             Master
           </span>
-        )}
-      </div>
-      
-      <div className="space-y-1 text-sm text-gray-600">
-        <div className="flex items-center gap-2">
-          <span className="text-gray-400">📅</span>
-          <span>Created: {formatDate(resume.createdAt ? new Date(resume.createdAt) : new Date())}</span>
+          )}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-gray-400">✏️</span>
-          <span>Last edited: {formatDate(resume.lastEdited ? new Date(resume.lastEdited) : new Date())}</span>
-        </div>
-      </div>
 
-    <div className="space-y-1 text-sm text-gray-600">
-      <div className="flex items-center gap-2">
-        <span className="text-gray-400">🔗</span>
-        {resume.portfolioURL ? (
-          <a
-            href={resume.portfolioURL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
-          >
-            {resume.portfolioURL}
-          </a>
-        ) : (
-          <span className="text-gray-400">No portfolio URL</span>
-        )}
-      </div>
-    </div>
-    
-      <div className="mt-3 pt-3 border-t border-gray-100">
+        <div className="space-y-1 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <span className="text-gray-400">📅</span>
+
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-gray-400">✏️</span>
+            <span>Last edited: {formatDate(
+                (resume.lastEdited ? new Date(resume.lastEdited) : new Date()).toISOString()
+            )}
+</span>
+
+          </div>
+        </div>
+
+        <div className="space-y-1 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <span className="text-gray-400">🔗</span>
+            {resume.portfolioURL ? (
+                <a
+                    href={resume.portfolioURL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                  {resume.portfolioURL}
+                </a>
+            ) : (
+                <span className="text-gray-400">No portfolio URL</span>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-3 pt-3 border-t border-gray-100">
         <span className="text-blue-600 text-sm font-medium hover:text-blue-800">
           View Resume →
         </span>
-      </div>
-    </Link>
+        </div>
+      </Link>
   );
 }
