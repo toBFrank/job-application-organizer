@@ -17,7 +17,7 @@ public class Resume {
     private Long id;
 
     @Column(nullable = false)
-    private boolean isMaster;
+    private boolean master;
 
     // if tailored resume, reference to master resume
     @ManyToOne(fetch = FetchType.LAZY)
