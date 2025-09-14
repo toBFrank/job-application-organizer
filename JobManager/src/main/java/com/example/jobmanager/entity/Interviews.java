@@ -1,5 +1,6 @@
 package com.example.jobmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -13,6 +14,7 @@ public class Interviews {
     // Many interviews belong to one application
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id", nullable = false)
+    @JsonBackReference
     private Application application;
 
     @Enumerated(EnumType.STRING)
