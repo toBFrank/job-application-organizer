@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/applications") // Base URL for all endpoints
+@RequestMapping("/applications")
+@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000"})
 public class ApplicationController {
 
     private final ApplicationService applicationService;
@@ -53,17 +54,18 @@ public class ApplicationController {
 
     // ================= UPDATE =================
     @PutMapping("/{id}")
-    public ResponseEntity<Application> updateApplication(final @PathVariable Long id,
-                                                         final @RequestBody Application updatedApp) {
+    public ResponseEntity<?> updateApplication(final @PathVariable Long id,
+                                               final @RequestBody Application updatedApp) {
         try {
             Application updated = applicationService.updateApplication(id, updatedApp);
             return ResponseEntity.ok(updated);
         } catch (ApplicationNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred: " + e.getMessage());
         }
     }
 
@@ -76,78 +78,49 @@ public class ApplicationController {
         } catch (ApplicationNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // ================= BUSINESS LOGIC ENDPOINTS =================
-
-    // Mark application as rejected
-    @PutMapping("/{id}/reject")
-    public ResponseEntity<Application> markAsRejected(final @PathVariable Long id) {
-        try {
-            Application rejectedApp = applicationService.markAsRejected(id);
-            return ResponseEntity.ok(rejectedApp);
-        } catch (ApplicationNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    // Mark application as job offer
-    @PutMapping("/{id}/job-offer")
-    public ResponseEntity<Application> markAsJobOffer(final @PathVariable Long id) {
-        try {
-            Application jobOfferApp = applicationService.markAsJobOffer(id);
-            return ResponseEntity.ok(jobOfferApp);
-        } catch (ApplicationNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred: " + e.getMessage());
         }
     }
 
     // ================= SEARCH ENDPOINTS =================
+//    @GetMapping("/search/company")
+//    public ResponseEntity<List<Application>> searchByCompany(final @RequestParam String company) {
+//        try {
+//            List<Application> applications = applicationService.findByCompany(company);
+//            return ResponseEntity.ok(applications);
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//    }
+//
+//    @GetMapping("/search/title")
+//    public ResponseEntity<List<Application>> searchByTitle(final @RequestParam String title) {
+//        try {
+//            List<Application> applications = applicationService.findByTitle(title);
+//            return ResponseEntity.ok(applications);
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//    }
 
-    // Search by company
-    @GetMapping("/search/company")
-    public ResponseEntity<List<Application>> searchByCompany(final @RequestParam String company) {
-        try {
-            List<Application> applications = applicationService.findByCompany(company);
-            return ResponseEntity.ok(applications);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    // Search by title
-    @GetMapping("/search/title")
-    public ResponseEntity<List<Application>> searchByTitle(final @RequestParam String title) {
-        try {
-            List<Application> applications = applicationService.findByTitle(title);
-            return ResponseEntity.ok(applications);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    // Get rejected applications
-    @GetMapping("/rejected")
-    public ResponseEntity<List<Application>> getRejectedApplications() {
-        List<Application> rejectedApps = applicationService.findRejectedApplications();
-        return ResponseEntity.ok(rejectedApps);
-    }
-
-    // Get applications with job offers
-    @GetMapping("/job-offers")
-    public ResponseEntity<List<Application>> getJobOfferApplications() {
-        List<Application> jobOfferApps = applicationService.findApplicationsWithJobOffers();
-        return ResponseEntity.ok(jobOfferApps);
-    }
-
-    // Get applications with interviews
-    @GetMapping("/with-interviews")
-    public ResponseEntity<List<Application>> getApplicationsWithInterviews() {
-        List<Application> appsWithInterviews = applicationService.findApplicationsWithInterviews();
-        return ResponseEntity.ok(appsWithInterviews);
-    }
+//    @GetMapping("/rejected")
+//    public ResponseEntity<List<Application>> getRejectedApplications() {
+//        List<Application> rejectedApps = applicationService.findRejectedApplications();
+//        return ResponseEntity.ok(rejectedApps);
+//    }
+//
+//    @GetMapping("/job-offers")
+//    public ResponseEntity<List<Application>> getJobOfferApplications() {
+//        List<Application> jobOfferApps = applicationService.findApplicationsWithJobOffers();
+//        return ResponseEntity.ok(jobOfferApps);
+//    }
+//
+//    @GetMapping("/with-interviews")
+//    public ResponseEntity<List<Application>> getApplicationsWithInterviews() {
+//        List<Application> appsWithInterviews = applicationService.findApplicationsWithInterviews();
+//        return ResponseEntity.ok(appsWithInterviews);
+//    }
 
     // ================= EXCEPTION HANDLING =================
     @ExceptionHandler(ApplicationNotFoundException.class)

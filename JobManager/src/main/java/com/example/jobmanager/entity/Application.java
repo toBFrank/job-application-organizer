@@ -1,5 +1,6 @@
 package com.example.jobmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,18 +19,11 @@ public class Application {
     private String company;
 
     @Column
-    private Boolean rejected;
-
-    @Column(name = "job_offer")
-    private Boolean jobOffer;
-
-    // Many applications can use one resume
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_id")
-    private Resume resume;
+    private String status;
 
     // One application can have many interviews
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Interviews> interviews = new ArrayList<>();
 
     // Constructors
@@ -37,18 +31,10 @@ public class Application {
         // Default constructor required by JPA
     }
 
-    public Application(String title, String company) {
+    public Application(final String title, final String company, final String status) {
         this.title = title;
         this.company = company;
-        this.rejected = false;
-        this.jobOffer = false;
-    }
-
-    public Application(String title, String company, Boolean rejected, Boolean jobOffer) {
-        this.title = title;
-        this.company = company;
-        this.rejected = rejected;
-        this.jobOffer = jobOffer;
+        this.status = status;
     }
 
     // Getters
@@ -64,17 +50,7 @@ public class Application {
         return company;
     }
 
-    public Boolean getRejected() {
-        return rejected;
-    }
-
-    public Boolean getJobOffer() {
-        return jobOffer;
-    }
-
-    public Resume getResume() {
-        return resume;
-    }
+    public String getStatus() { return status; }
 
     public List<Interviews> getInterviews() {
         return interviews;
@@ -93,17 +69,7 @@ public class Application {
         this.company = company;
     }
 
-    public void setRejected(Boolean rejected) {
-        this.rejected = rejected;
-    }
-
-    public void setJobOffer(Boolean jobOffer) {
-        this.jobOffer = jobOffer;
-    }
-
-    public void setResume(Resume resume) {
-        this.resume = resume;
-    }
+    public void setStatus(String status) { this.status = status; }
 
     public void setInterviews(List<Interviews> interviews) {
         this.interviews = interviews;
