@@ -17,9 +17,7 @@ function formatDate(dateString: string) {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+    day: 'numeric'
   });
 }
 
@@ -41,14 +39,32 @@ export default function ResumeCard({ resume }: ResumeCardProps) {
       <div className="space-y-1 text-sm text-gray-600">
         <div className="flex items-center gap-2">
           <span className="text-gray-400">📅</span>
-          <span>Created: {formatDate(resume.createdAt)}</span>
+          <span>Created: {formatDate(resume.createdAt ? new Date(resume.createdAt) : new Date())}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-gray-400">✏️</span>
-          <span>Last edited: {formatDate(resume.lastEdited)}</span>
+          <span>Last edited: {formatDate(resume.lastEdited ? new Date(resume.lastEdited) : new Date())}</span>
         </div>
       </div>
-      
+
+    <div className="space-y-1 text-sm text-gray-600">
+      <div className="flex items-center gap-2">
+        <span className="text-gray-400">🔗</span>
+        {resume.portfolioURL ? (
+          <a
+            href={resume.portfolioURL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            {resume.portfolioURL}
+          </a>
+        ) : (
+          <span className="text-gray-400">No portfolio URL</span>
+        )}
+      </div>
+    </div>
+    
       <div className="mt-3 pt-3 border-t border-gray-100">
         <span className="text-blue-600 text-sm font-medium hover:text-blue-800">
           View Resume →
