@@ -1,11 +1,8 @@
 import Link from 'next/link';
+import {Resume} from '../../types/resume';
 
 interface Resume {
-  id: number;
-  title: string;
-  createdAt: string;
-  lastEdited: string;
-  isMaster: boolean;
+  resume: Resume
 }
 
 interface ResumeCardProps {
