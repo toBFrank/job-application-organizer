@@ -15,12 +15,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     // Find applications by job title
     List<Application> findByTitleContainingIgnoreCase(String title);
 
-    // Find rejected applications
-    List<Application> findByRejectedTrue();
-
-    // Find applications with job offers
-    List<Application> findByJobOfferTrue();
-
     // Custom query to find applications with interviews
     @Query("SELECT a FROM Application a WHERE SIZE(a.interviews) > 0")
     List<Application> findApplicationsWithInterviews();

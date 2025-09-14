@@ -1,6 +1,7 @@
 package com.example.jobmanager.service;
 
 import com.example.jobmanager.entity.Application;
+import com.example.jobmanager.entity.ApplicationStatus;
 import com.example.jobmanager.exception.ApplicationNotFoundException;
 import com.example.jobmanager.repository.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,10 @@ public class ApplicationService {
     // CREATE - Save new application with validation
     public Application createApplication(final Application application) {
         validateApplicationData(application);
-
-        if (application.getRejected() == null) {
-            application.setRejected(false);
-        }
-        if (application.getJobOffer() == null) {
-            application.setJobOffer(false);
+        
+        // Set default status if not provided
+        if (application.getStatus() == null) {
+            application.setStatus(ApplicationStatus.APPLIED.name());
         }
 
         return applicationRepository.save(application);
@@ -47,17 +46,17 @@ public class ApplicationService {
         return applicationRepository.findById(id);
     }
 
-    // UPDATE - Update existing application
+    // UPDATE - Update existing application with status validation
     public Application updateApplication(final Long id, final Application updatedApplication) throws Exception {
         return applicationRepository.findById(id)
                 .map(existingApp -> {
                     validateApplicationData(updatedApplication);
+                    validateStatus(updatedApplication.getStatus());
 
                     // Update fields
                     existingApp.setTitle(updatedApplication.getTitle());
                     existingApp.setCompany(updatedApplication.getCompany());
-                    existingApp.setRejected(updatedApplication.getRejected());
-                    existingApp.setJobOffer(updatedApplication.getJobOffer());
+                    existingApp.setStatus(updatedApplication.getStatus());
 
                     return applicationRepository.save(existingApp);
                 })
@@ -81,39 +80,11 @@ public class ApplicationService {
         return applicationRepository.findByTitleContainingIgnoreCase(title);
     }
 
-    public List<Application> findRejectedApplications() {
-        return applicationRepository.findByRejectedTrue();
-    }
-
-    public List<Application> findApplicationsWithJobOffers() {
-        return applicationRepository.findByJobOfferTrue();
-    }
-
     public List<Application> findApplicationsWithInterviews() {
         return applicationRepository.findApplicationsWithInterviews();
     }
 
-    public Application markAsRejected(final Long id) {
-        return applicationRepository.findById(id)
-                .map(app -> {
-                    app.setRejected(true);
-                    app.setJobOffer(false); // Can't have both
-                    return applicationRepository.save(app);
-                })
-                .orElseThrow(() -> new ApplicationNotFoundException("Application not found with id: " + id));
-    }
-
-    public Application markAsJobOffer(final Long id) {
-        return applicationRepository.findById(id)
-                .map(app -> {
-                    app.setJobOffer(true);
-                    app.setRejected(false); // Can't have both
-                    return applicationRepository.save(app);
-                })
-                .orElseThrow(() -> new ApplicationNotFoundException("Application not found with id: " + id));
-    }
-
-    // VALIDATION HELPER METHOD
+    // VALIDATION HELPER METHODS
     private void validateApplicationData(final Application application) {
         if (application.getTitle() == null || application.getTitle().trim().isEmpty()) {
             throw new IllegalArgumentException("Job title cannot be empty");
@@ -130,10 +101,17 @@ public class ApplicationService {
         if (application.getCompany().length() > 255) {
             throw new IllegalArgumentException("Company name cannot exceed 255 characters");
         }
+    }
 
-        // Can't be both rejected and have job offer
-        if (Boolean.TRUE.equals(application.getRejected()) && Boolean.TRUE.equals(application.getJobOffer())) {
-            throw new IllegalArgumentException("Application cannot be both rejected and have a job offer");
+    private void validateStatus(final String status) {
+        if (status == null || status.trim().isEmpty()) {
+            throw new IllegalArgumentException("Status cannot be empty");
+        }
+
+        if (!ApplicationStatus.isValidStatus(status)) {
+            throw new IllegalArgumentException(
+                "Invalid status: " + status + ". Allowed statuses are: " + ApplicationStatus.getAllowedStatuses()
+            );
         }
     }
 }
