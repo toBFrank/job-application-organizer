@@ -61,7 +61,7 @@ This API provides CRUD operations and search/filtering for managing entities in 
 | `interviews` | List<Interviews> | List of associated interviews |
 
 ---
-## Interviews
+## 2. Interviews
 
 **Base URL:** `/interviews`
 
@@ -90,6 +90,10 @@ This API provides CRUD operations and search/filtering for managing entities in 
 
 ---
 
+## 3. Resume
+  
+**Base URL:** `/resume`
+
 #### API Endpoints
 
 | HTTP Method | URL                   | Request Body                    | URL Params  | Response                   | Description                              |
@@ -114,4 +118,5 @@ This API provides CRUD operations and search/filtering for managing entities in 
 | `education`       | String | Education background                             |
 | `projects`        | String | Summary of projects                              |
 
+---
 

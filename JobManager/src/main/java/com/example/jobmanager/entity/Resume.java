@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,11 +16,19 @@ public class Resume {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "resume")
-    private List<Application> applications;
+    @Column(nullable = false)
+    private boolean isMaster;
+
+    // if tailored resume, reference to master resume
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "master_resume_id")
+    private Resume masterResume;
 
     @Column
-    private boolean isMaster;
+    private String title;
+
+    @Column
+    private String status;
 
     @Column
     private String fileName;
