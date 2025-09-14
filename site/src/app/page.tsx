@@ -1,12 +1,8 @@
-import Header from './components/header';
-import Job_Board from './components/job_board'
+import Job_Board from './components/JobBoard'
 
 export default function Home() {
   return (    
-    <main className="min-h-screen">
-
-      <Header />
-
+    <main className="">
       <div className="flex items-center border-b border-gray-400 shadow-sm justify-between bg-gray-50 pb-5 pt-6 px-10">
         <h1 className="text-2xl md:text-3xl font-semibold">Your Job Applications</h1>
         <div className="flex items-center gap-2">
