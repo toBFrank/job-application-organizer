@@ -118,16 +118,16 @@ Software Development Engineer Intern, Formidable Designs:
 
                 // --- Applications ---
 
-                Application app1 = new Application("Backend Developer", "TechCorp");
-                app1.setResume(tailoredBackend); // Backend-focused tailored resume
+                Application app1 = new Application("Backend Developer", "TechCorp", "APPLIED");
+//                app1.setResume(tailoredBackend); // Backend-focused tailored resume
                 app1 = applicationRepository.save(app1);
 
-                Application app2 = new Application("Full-Stack Engineer", "InnovateX");
-                app2.setResume(tailoredFullstack); // Full-stack-focused tailored resume
+                Application app2 = new Application("Full-Stack Engineer", "InnovateX", "APPLIED");
+//                app2.setResume(tailoredFullstack); // Full-stack-focused tailored resume
                 app2 = applicationRepository.save(app2);
 
-                Application app3 = new Application("Data Analyst", "DataSolutions");
-                app3.setResume(tailoredBackend); // Using backend resume for data role
+                Application app3 = new Application("Data Analyst", "DataSolutions", "APPLIED");
+//                app3.setResume(tailoredBackend); // Using backend resume for data role
                 app3 = applicationRepository.save(app3);
 
                 // --- Interviews for app1 (Backend Developer) ---
@@ -156,6 +156,7 @@ Software Development Engineer Intern, Formidable Designs:
                 interviewRepository.save(int5);
                 interviewRepository.save(int6);
                 applicationRepository.save(app3);
+
 
 
                 System.out.println("✅ Sample data loaded: resumes, applications, and interviews.");
