@@ -1,27 +1,12 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 type Application = {
-  id: string;
+  id: number;
   title: string;
   company: string;
-  rejected: boolean;
-  jobOffer: boolean;
-};
-
-let test1: Application = {
-  id: '1',
-  title: 'Java Developer',
-  company: 'Microsoft',
-  rejected: false,
-  jobOffer: false,
-};
-let test2: Application = {
-  id: '2',
-  title: 'Software Engineer',
-  company: 'Roblox',
-  rejected: false,
-  jobOffer: false,
+  status: string;
+  interviews?: any[];
 };
 
 type ColumnId = 'applied' | 'interviewing' | 'offer' | 'rejected';
@@ -31,24 +16,100 @@ type Columns = Record<
 >;
 
 const DEFAULT_COLUMNS: Columns = {
-  applied: { id: 'applied', col_title: 'Applied', apps: [test1] },
-  interviewing: { id: 'interviewing', col_title: 'Interviewing', apps: [test2] },
+  applied: { id: 'applied', col_title: 'Applied', apps: [] },
+  interviewing: { id: 'interviewing', col_title: 'Interviewing', apps: [] },
   offer: { id: 'offer', col_title: 'Offer', apps: [] },
   rejected: { id: 'rejected', col_title: 'Rejected', apps: [] },
 };
 
-export default function Job_Board() {
+interface JobBoardProps {
+  refreshTrigger?: number;
+}
+
+export default function Job_Board({ refreshTrigger = 0 }: JobBoardProps) {
   const [columns, setColumns] = useState<Columns>(DEFAULT_COLUMNS);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Store the dragged app + source column
   const [dragged, setDragged] = useState<{ appId: string; from: ColumnId } | null>(null);
 
+  // Map backend status to column IDs
+  const statusToColumnMap: Record<string, ColumnId> = {
+    'APPLIED': 'applied',
+    'INTERVIEWING': 'interviewing', 
+    'OFFER': 'offer',
+    'REJECTED': 'rejected'
+  };
+
+  // Fetch applications from backend
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await fetch('http://localhost:8080/applications');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const applications: Application[] = await response.json();
+        
+        // Group applications by status
+        const newColumns = { ...DEFAULT_COLUMNS };
+        
+        applications.forEach(app => {
+          const columnId = statusToColumnMap[app.status];
+          if (columnId) {
+            newColumns[columnId].apps.push(app);
+          }
+        });
+        
+        setColumns(newColumns);
+      } catch (err) {
+        console.error('Error fetching applications:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch applications');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApplications();
+  }, [refreshTrigger]);
+
+  // Update application status in backend
+  const updateApplicationStatus = async (appId: number, newStatus: string, currentApp: Application) => {
+    try {
+      const response = await fetch(`http://localhost:8080/applications/${appId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: appId,
+          title: currentApp.title,
+          company: currentApp.company,
+          status: newStatus
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (err) {
+      console.error('Error updating application status:', err);
+      setError('Failed to update application status');
+    }
+  };
+
   function onDragStart(
     e: React.DragEvent<HTMLDivElement>,
-    appId: string,
+    appId: number,
     from: ColumnId
   ) {
-    setDragged({ appId, from });
+    setDragged({ appId: appId.toString(), from });
     e.dataTransfer.effectAllowed = 'move';
   }
 
@@ -63,24 +124,61 @@ export default function Job_Board() {
     const { appId, from } = dragged;
     if (from === to) return;
 
+    const appIdNum = parseInt(appId);
+    const newStatus = Object.keys(statusToColumnMap).find(
+      key => statusToColumnMap[key] === to
+    );
+
+    if (!newStatus) return;
+
+    // Update local state first for immediate UI feedback
     setColumns((prev) => {
-      const app = prev[from].apps.find((a) => a.id === appId);
+      const app = prev[from].apps.find((a) => a.id === appIdNum);
       if (!app) return prev;
+
+      const updatedApp = { ...app, status: newStatus };
+
+      // Update backend asynchronously
+      updateApplicationStatus(appIdNum, newStatus, app);
 
       return {
         ...prev,
         [from]: {
           ...prev[from],
-          apps: prev[from].apps.filter((a) => a.id !== appId),
+          apps: prev[from].apps.filter((a) => a.id !== appIdNum),
         },
         [to]: {
           ...prev[to],
-          apps: [...prev[to].apps, app],
+          apps: [...prev[to].apps, updatedApp],
         },
       };
     });
 
     setDragged(null);
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[300px]">
+        <div className="text-lg text-slate-600">Loading applications...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[300px]">
+        <div className="text-lg text-red-600">
+          Error: {error}
+          <button 
+            onClick={() => window.location.reload()} 
+            className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -113,7 +211,7 @@ export default function Job_Board() {
                 <article
                   key={app.id}
                   draggable
-                  onDragStart={(e) => onDragStart(e, app.id, col.id)}
+                  onDragStart={(e) => onDragStart(e as React.DragEvent<HTMLDivElement>, app.id, col.id as ColumnId)}
                   className="bg-slate-50 p-3 rounded-md border cursor-grab hover:shadow-sm"
                 >
                   <div className="flex justify-between items-start gap-2">
